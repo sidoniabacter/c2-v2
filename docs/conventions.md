@@ -9,12 +9,15 @@ Code, comments, commit messages and the files in docs/ are written in English.
 
 ## Code style
 
-TODO: the formatter and linter used, and the few rules they do not cover.
+No formatter or linter is configured. Use semantic HTML, readable CSS, and
+plain browser JavaScript; do not introduce a framework, build step, or runtime
+dependency without asking first.
 
 ## Branches
 
-TODO: for example main is always working; one branch per task, named feature/<short-name>.
+No project-specific branch naming convention has been set. Keep changes scoped
+to the task and follow the repository's existing branch setup.
 
 ## Commit messages
 
-TODO: for example one line in the imperative, under 72 characters: "Add login form validation".
+Use a concise, imperative subject, for example: "Document static login page".

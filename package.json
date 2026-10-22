@@ -1,0 +1,27 @@
+{
+  "name": "c2-v2",
+  "version": "1.0.0",
+  "description": "A starting point for a repository that AI coding agents (GitHub Copilot, Claude Code and others) can work in well: a short `AGENTS.md`, a `docs/` folder that holds the project's memory, specs for what gets built, and one command that tells you whether the setup is in order.",
+  "main": "script.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sidoniabacter/c2-v2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sidoniabacter/c2-v2/issues"
+  },
+  "homepage": "https://github.com/sidoniabacter/c2-v2#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.64.1"
+  }
+}

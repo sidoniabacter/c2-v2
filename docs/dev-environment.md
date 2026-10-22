@@ -8,22 +8,20 @@ give both versions.
 
 ## Requirements
 
-TODO: what must be installed, with versions (for example Docker Desktop, Git).
+- A modern web browser.
+- No runtime, package manager, or build tools are required.
 
 ## Start
 
-```
-TODO: the commands that start the project
-```
+The application files have not been added yet. Once `index.html` exists, open
+it directly in a browser. No development server is used.
 
-TODO: the address where it opens (for example http://localhost:5173).
+There is no local HTTP address; the page opens from the local file.
 
 ## Stop
 
-```
-TODO: the commands that stop it
-```
+Close the browser tab.
 
 ## Common problems
 
-TODO: problems that actually happened, each with its fix.
+- None reported.

@@ -16,6 +16,10 @@ It contains no application code, so it fits any stack. Used in the course
 4. Create the two pointer files, so every tool reads the same rules:
    - `CLAUDE.md` with a single line:
      ```
+
+     ```
+   - `GEMINI.md` with a single line:
+     ```
      @AGENTS.md
      ```
    - `.github/copilot-instructions.md` with:
@@ -37,20 +41,20 @@ A fresh copy of the template is red on purpose: steps 3 and 4 are still to do.
 
 ## What is inside
 
-| File | What it holds | When the agent reads it |
-| --- | --- | --- |
-| `AGENTS.md` | what the project is, what is non-standard, the index of `docs/` | on every request |
-| `docs/state.md` | work in progress, open questions, rejected proposals | first, in every session |
-| `docs/hard-rules.md` | what must never be done, and why | before changing any file |
-| `docs/dev-environment.md` | how to start the project | when asked to run it |
-| `docs/testing.md` | how to check that something works | before saying it works |
-| `docs/architecture.md` | how the main parts connect | before structural changes |
-| `docs/conventions.md` | code style, branches, commit messages | before writing code |
-| `docs/workflow.md` | how a change reaches the main branch | before a pull request |
-| `docs/decisions.md` | why things were decided, with dates | before reopening a decision |
-| `docs/specs/` | one spec per feature | before building it |
-| `docs/ai-log.md` | your own account of how AI was used | never edited by the agent |
-| `bin/check` | the quick check | you run it; so can the agent |
+| File                      | What it holds                                                   | When the agent reads it      |
+| ------------------------- | --------------------------------------------------------------- | ---------------------------- |
+| `AGENTS.md`               | what the project is, what is non-standard, the index of `docs/` | on every request             |
+| `docs/state.md`           | work in progress, open questions, rejected proposals            | first, in every session      |
+| `docs/hard-rules.md`      | what must never be done, and why                                | before changing any file     |
+| `docs/dev-environment.md` | how to start the project                                        | when asked to run it         |
+| `docs/testing.md`         | how to check that something works                               | before saying it works       |
+| `docs/architecture.md`    | how the main parts connect                                      | before structural changes    |
+| `docs/conventions.md`     | code style, branches, commit messages                           | before writing code          |
+| `docs/workflow.md`        | how a change reaches the main branch                            | before a pull request        |
+| `docs/decisions.md`       | why things were decided, with dates                             | before reopening a decision  |
+| `docs/specs/`             | one spec per feature                                            | before building it           |
+| `docs/ai-log.md`          | your own account of how AI was used                             | never edited by the agent    |
+| `bin/check`               | the quick check                                                 | you run it; so can the agent |
 
 ## What bin/check verifies
 
