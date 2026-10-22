@@ -1,0 +1,6 @@
+# bin/check is a shell script and must keep LF line endings on every system.
+* text=auto eol=lf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.png binary
+*.jpg binary

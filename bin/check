@@ -1,0 +1,145 @@
+#!/bin/sh
+# bin/check: is the agent configuration of this repository in order?
+#
+#   bin/check           macOS, Linux, Git Bash
+#   bin\check.cmd       Windows (cmd or PowerShell)
+#
+# Exit code 0 means green. Exit code 1 means at least one problem to fix.
+# Warnings do not make the check fail.
+
+cd "$(dirname "$0")/.." || exit 1
+
+MAX_LINES=40
+problems=0
+warnings=0
+
+ok()   { printf '  ok    %s\n' "$1"; }
+fail() { printf '  FAIL  %s\n' "$1"; problems=$((problems + 1)); }
+warn() { printf '  warn  %s\n' "$1"; warnings=$((warnings + 1)); }
+
+# Prints a file without Windows line endings.
+clean() { tr -d '\r' < "$1"; }
+
+# --- AGENTS.md ----------------------------------------------------------------
+echo "AGENTS.md"
+if [ ! -f AGENTS.md ]; then
+  fail "AGENTS.md is missing"
+else
+  todo=$(clean AGENTS.md | grep -c 'TODO')
+  if [ "$todo" -gt 0 ]; then
+    fail "AGENTS.md still has $todo line(s) with TODO: fill them in or delete them"
+  else
+    ok "no TODO left"
+  fi
+
+  lines=$(clean AGENTS.md | wc -l | tr -d ' ')
+  if [ "$lines" -gt "$MAX_LINES" ]; then
+    fail "AGENTS.md has $lines lines; the target is $MAX_LINES or fewer. Move details to docs/"
+  else
+    ok "$lines lines (target: $MAX_LINES or fewer)"
+  fi
+fi
+
+# --- The index: AGENTS.md and docs/ must match --------------------------------
+echo "Index (AGENTS.md and docs/)"
+if [ -f AGENTS.md ] && [ -d docs ]; then
+  before=$problems
+
+  # Every document in docs/ has its line in AGENTS.md.
+  for path in docs/*.md docs/*/; do
+    [ -e "$path" ] || continue
+    count=$(clean AGENTS.md | grep -c -F "$path")
+    if [ "$count" -eq 0 ]; then
+      fail "$path has no line in AGENTS.md: the agent will not know it exists"
+    elif [ "$count" -gt 1 ] && [ -f "$path" ]; then
+      warn "$path is mentioned on $count lines of AGENTS.md; one line is enough"
+    fi
+  done
+  [ "$problems" -eq "$before" ] && ok "every document in docs/ has its line in AGENTS.md"
+
+  # Every docs/ path named in AGENTS.md exists.
+  before=$problems
+  for ref in $(clean AGENTS.md | grep -o 'docs/[A-Za-z0-9_./-]*' | sed 's/[.]*$//' | sort -u); do
+    case "$ref" in
+      docs/) continue ;;
+      */) [ -d "$ref" ] || fail "AGENTS.md points to $ref, which does not exist" ;;
+      *)  [ -e "$ref" ] || fail "AGENTS.md points to $ref, which does not exist" ;;
+    esac
+  done
+  [ "$problems" -eq "$before" ] && ok "every docs/ path in AGENTS.md exists"
+else
+  fail "docs/ is missing"
+fi
+
+# --- Other tools point to AGENTS.md instead of copying it ---------------------
+echo "Pointers to AGENTS.md"
+if [ -L CLAUDE.md ]; then
+  if [ "$(readlink CLAUDE.md)" = "AGENTS.md" ]; then
+    ok "CLAUDE.md is a symlink to AGENTS.md"
+  else
+    fail "CLAUDE.md is a symlink, but not to AGENTS.md"
+  fi
+elif [ -f CLAUDE.md ]; then
+  if clean CLAUDE.md | grep -q '^[[:space:]]*@AGENTS\.md[[:space:]]*$'; then
+    ok "CLAUDE.md imports AGENTS.md"
+  elif [ "$(clean CLAUDE.md | tr -d '[:space:]')" = "AGENTS.md" ]; then
+    fail "CLAUDE.md is a symlink that Git checked out as plain text: replace its content with the line @AGENTS.md"
+  else
+    fail "CLAUDE.md has no line @AGENTS.md: it should import AGENTS.md, not copy it"
+  fi
+else
+  fail "CLAUDE.md is missing: create it with one line, @AGENTS.md"
+fi
+
+copilot=.github/copilot-instructions.md
+if [ ! -f "$copilot" ]; then
+  fail "$copilot is missing: create it with two lines that tell Copilot to read AGENTS.md"
+elif ! clean "$copilot" | grep -q 'AGENTS\.md'; then
+  fail "$copilot does not mention AGENTS.md"
+else
+  n=$(clean "$copilot" | grep -c '[^[:space:]]')
+  if [ "$n" -gt 5 ]; then
+    fail "$copilot has $n lines: keep it a short pointer (5 lines at most), not a copy of the rules"
+  else
+    ok "$copilot points to AGENTS.md"
+  fi
+fi
+
+if [ -f GEMINI.md ] && [ ! -L GEMINI.md ] && ! clean GEMINI.md | grep -q 'AGENTS\.md'; then
+  warn "GEMINI.md does not mention AGENTS.md: make it a pointer, not a copy"
+fi
+
+# --- Documents that still have placeholders (warnings only) -------------------
+echo "Documents"
+before=$warnings
+for path in docs/*.md docs/*/*.md; do
+  [ -f "$path" ] || continue
+  if clean "$path" | grep -q 'TODO'; then
+    warn "$path still has TODO"
+  fi
+done
+[ "$warnings" -eq "$before" ] && ok "no TODO left in docs/"
+
+# --- Project checks -----------------------------------------------------------
+# When the project has code, run its own checks here, so that one command still
+# answers "is it green?". Example for a project that runs in Docker:
+#
+#   echo "Project"
+#   if docker compose exec -T app yarn run check; then
+#     ok "lint and tests"
+#   else
+#     fail "lint or tests"
+#   fi
+
+# --- Result -------------------------------------------------------------------
+echo
+if [ "$problems" -gt 0 ]; then
+  echo "bin/check: $problems problem(s) to fix"
+  exit 1
+fi
+if [ "$warnings" -gt 0 ]; then
+  echo "bin/check: green, with $warnings warning(s)"
+else
+  echo "bin/check: green"
+fi
+exit 0
