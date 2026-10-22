@@ -14,8 +14,9 @@ placeholders left and stays short, every document in docs/ has its line in AGENT
 and every line points to a file that exists, CLAUDE.md and
 .github/copilot-instructions.md point to AGENTS.md instead of copying it.
 
-When the project has code, add its own checks (lint, tests) at the marked
-place at the end of bin/check, so one command still answers "is it green?".
+The login page has browser tests using the existing Playwright development
+dependency. `npm test` runs them; `bin/check` runs them as part of the
+repository check.
 
 ## Rules
 
@@ -24,7 +25,13 @@ place at the end of bin/check, so one command still answers "is it green?".
 
 ## Project tests
 
-There are no application files or application tests yet. After the page is
-added, open `index.html` in a browser and check that the login form renders
-and can be used. The form is presentation-only; do not treat submission as
-successful authentication.
+The Playwright tests in `tests/login.spec.js` cover every behavior in
+`docs/specs/login.md`. Run them with:
+
+```
+npm test
+```
+
+The tests open `index.html` directly in Chromium and check the form, browser
+input validation, presentation-only submission, and absence of password
+recovery. The form does not authenticate users.

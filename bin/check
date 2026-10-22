@@ -121,15 +121,22 @@ done
 [ "$warnings" -eq "$before" ] && ok "no TODO left in docs/"
 
 # --- Project checks -----------------------------------------------------------
-# When the project has code, run its own checks here, so that one command still
-# answers "is it green?". Example for a project that runs in Docker:
-#
-#   echo "Project"
-#   if docker compose exec -T app yarn run check; then
-#     ok "lint and tests"
-#   else
-#     fail "lint or tests"
-#   fi
+run_project_tests() {
+  if command -v cmd.exe >/dev/null 2>&1; then
+    cmd.exe //d //c npm.cmd test
+  elif command -v npm >/dev/null 2>&1; then
+    npm test
+  else
+    return 127
+  fi
+}
+
+echo "Project"
+if run_project_tests; then
+  ok "login tests"
+else
+  fail "login tests could not run; npm and Playwright must be installed"
+fi
 
 # --- Result -------------------------------------------------------------------
 echo
